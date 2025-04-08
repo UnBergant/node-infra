@@ -28,7 +28,6 @@ jobs:
         run: |
           echo "${{ secrets.ANSIBLE_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           cat ~/.ssh/known_hosts
-          ssh-keyscan 94.156.117.131 
 
       - name: 🚀 Запустить Ansible
         run: |
