@@ -4,19 +4,13 @@
   vars_files:
     - ../group_vars/all.yml
   tasks:
-    - name: Set root SSH key
-      copy:
-        src: "{{ root_pubkey_file }}"
-        dest: "/root/.ssh/authorized_keys"
-        owner: root
-        group: root
-        mode: '0600'
     - name: Create user "{{ admin_username }}"
       user:
         name: "{{ admin_username }}"
         groups: sudo
         shell: /bin/bash
         create_home: yes
+
     - name: Create .ssh dir
       file:
         path: "/home/{{ admin_username }}/.ssh"
@@ -24,6 +18,7 @@
         owner: "{{ admin_username }}"
         group: "{{ admin_username }}"
         mode: '0700'
+
     - name: Set public key
       copy:
         src: "{{ admin_pubkey_file }}"
@@ -31,19 +26,7 @@
         owner: "{{ admin_username }}"
         group: "{{ admin_username }}"
         mode: '0600'
-    - name: Restrict sudo
-      copy:
-        dest: "/etc/sudoers.d/{{ admin_username }}"
-        content: |
-          {{ admin_username }} ALL=(ALL) NOPASSWD: {{ allowed_sudo_commands | join(', ') }}
-        mode: '0440'
-    - name: Запретить вход по паролю
-      lineinfile:
-        path: /etc/ssh/sshd_config
-        regexp: '^PasswordAuthentication'
-        line: 'PasswordAuthentication no'
-        state: present
-        backup: yes
+
     - name: Перезапустить SSH
       service:
         name: ssh

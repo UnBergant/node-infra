@@ -1,0 +1,35 @@
+- name: Основной деплой через пользователя admin
+  hosts: all
+  become: true
+  vars_files:
+    - ../group_vars/all.yml
+  tasks:
+    - name: Restrict sudo
+      copy:
+        dest: "/etc/sudoers.d/{{ admin_username }}"
+        content: |
+          {{ admin_username }} ALL=(ALL) NOPASSWD: {{ allowed_sudo_commands | join(', ') }}
+        mode: '0440'
+
+    - name: Отключить вход с пустым паролем
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitEmptyPasswords'
+        line: 'PermitEmptyPasswords no'
+        state: present
+
+    - name: Проверить наличие пользователей с пустым паролем
+      shell: "awk -F: '($2 == \"\") { print $1 }' /etc/shadow"
+      register: empty_password_users
+      changed_when: false
+      check_mode: no
+
+    - name: Показать пользователей с пустым паролем (если есть)
+      debug:
+        msg: "Пользователи с пустым паролем: {{ empty_password_users.stdout_lines }}"
+      when: empty_password_users.stdout != ""
+
+    - name: Перезапустить SSH
+      service:
+        name: ssh
+        state: restarted
