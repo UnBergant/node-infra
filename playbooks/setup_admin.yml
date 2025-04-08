@@ -27,6 +27,14 @@
         group: "{{ admin_username }}"
         mode: '0600'
 
+    - name: Создать тестовый файл для теста от имени admin
+      copy:
+        dest: "/home/{{ admin_username }}/example.txt"
+        content: "Пример файла, созданного Ansible"
+        owner: "{{ admin_username }}"
+        group: "{{ admin_username }}"
+        mode: '0644'
+
     - name: Перезапустить SSH
       service:
         name: ssh

@@ -30,4 +30,4 @@ jobs:
 
       - name: 🚀 Запустить Ansible
         run: |
-          ansible-playbook -i inventory/prod/hosts.ini playbooks/deploy_actions.yml
+          ansible-playbook -i inventory/prod/hosts.ini playbooks/setup_admin.yml
