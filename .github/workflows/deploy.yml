@@ -36,7 +36,6 @@ jobs:
         run: |
           ls -l ~/.ssh/
           file ~/.ssh/ansible_key
-          cat ~/.ssh/ansible_key
           ssh-keygen -lf ~/.ssh/ansible_key || echo "❌ Ключ не читается"
 
       - name: 🚀 Запустить Ansible
