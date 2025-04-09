@@ -1,10 +1,10 @@
-name: 🔗 Setup aliases for admin and root
+name: 🔗 Setup aliases
 
 on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  setup_aliases:
     runs-on: ubuntu-latest
 
     steps:

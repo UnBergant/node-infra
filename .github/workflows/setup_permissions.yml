@@ -1,7 +1,7 @@
 name: 🔐 Setup users permissions
 
 on:
-  workflow_dispatch:
+  workflow_call:
 
 jobs:
   setup_permissions:

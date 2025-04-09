@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  setup_admin:
     runs-on: ubuntu-latest
 
     env:
@@ -47,3 +47,6 @@ jobs:
       - name: 🛠️ Запустить setup_admin.yml
         run: |
           ansible-playbook -i inventory/prod/hosts.ini playbooks/setup_admin.yml
+  call_permissions:
+    needs: setup_admin  # 🧠 будет вызван ТОЛЬКО если setup_admin успешен
+    uses: ./.github/workflows/setup_permissions.yml
