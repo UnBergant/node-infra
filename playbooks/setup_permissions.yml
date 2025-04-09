@@ -42,7 +42,6 @@
         regexp: '^PermitEmptyPasswords'
         line: 'PermitEmptyPasswords no'
         state: present
-      when: root_ssh_key_check.stdout != ""
 
     - name: Перезапустить SSH
       service:
