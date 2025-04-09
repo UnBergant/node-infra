@@ -6,6 +6,7 @@ on:
 jobs:
   setup_permissions:
     runs-on: ubuntu-latest
+    environment: manual-approval
 
     steps:
       - name: 📥 Checkout
