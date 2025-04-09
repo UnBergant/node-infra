@@ -4,12 +4,19 @@
   vars_files:
     - ../group_vars/all.yml
   tasks:
+
+    - name: Проверить, имеет ли пользователь sudo без пароля
+      stat:
+        path: "/etc/sudoers.d/{{ admin_username }}"
+      register: sudoers_file
+
     - name: Restrict sudo
       copy:
         dest: "/etc/sudoers.d/{{ admin_username }}"
         content: |
           {{ admin_username }} ALL=(ALL) NOPASSWD: {{ allowed_sudo_commands | join(', ') }}
         mode: '0440'
+      when: not sudoers_file.stat.exists
 
     - name: Отключить вход с пустым паролем
       lineinfile:
@@ -28,6 +35,14 @@
       debug:
         msg: "Пользователи с пустым паролем: {{ empty_password_users.stdout_lines }}"
       when: empty_password_users.stdout != ""
+
+    - name: Отключить вход с пустым паролем, только если ключ у root уже есть
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitEmptyPasswords'
+        line: 'PermitEmptyPasswords no'
+        state: present
+      when: root_ssh_key_check.stdout != ""
 
     - name: Перезапустить SSH
       service:
