@@ -49,7 +49,7 @@ jobs:
           ansible-playbook -i inventory/prod/hosts.ini playbooks/setup_admin.yml
   trigger_permissions:
     name: 🔁 Вызов setup_permissions
-    needs: setup_admin  # 🧠 будет вызван ТОЛЬКО если setup_admin успешен
+    needs: setup_admin
     uses: ./.github/workflows/setup_permissions.yml
     with:
       target_ip: ${{ secrets.TARGET_SERVER_IP }}
