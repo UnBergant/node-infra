@@ -1,4 +1,4 @@
-name: 👨🔗 Setup aliases for admin and root
+name: 🔗 Setup aliases for admin and root
 
 on:
   workflow_dispatch:
