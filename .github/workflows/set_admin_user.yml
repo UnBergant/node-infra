@@ -1,4 +1,4 @@
-name: 👨‍💻 Setup Admin user
+name: 👨‍💻 Setup admin user
 
 on:
   workflow_dispatch:
