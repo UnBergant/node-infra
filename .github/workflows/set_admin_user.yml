@@ -1,4 +1,4 @@
-name: Deploy Admin Secure Config
+name: 👨‍💻 Setup Admin User
 
 on:
   workflow_dispatch:
