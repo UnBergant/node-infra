@@ -50,3 +50,5 @@ jobs:
   call_permissions:
     needs: setup_admin  # 🧠 будет вызван ТОЛЬКО если setup_admin успешен
     uses: ./.github/workflows/setup_permissions.yml
+    with:
+      target_ip: ${{ secrets.TARGET_SERVER_IP }}

@@ -2,6 +2,10 @@ name: 🔐 Setup users permissions
 
 on:
   workflow_call:
+    inputs:
+      target_ip:
+        required: true
+        type: string
 
 jobs:
   setup_permissions:
@@ -30,7 +34,8 @@ jobs:
         run: |
           mkdir -p inventory/prod
           echo "[all]" > inventory/prod/hosts.ini
-          echo "altair ansible_host=${{ secrets.TARGET_SERVER_IP }}" >> inventory/prod/hosts.ini
+          echo "altair ansible_host=${{ inputs.target_ip }}" >> inventory/prod/hosts.ini
+          
           echo "[all:vars]" >> inventory/prod/hosts.ini
           echo "ansible_user=root" >> inventory/prod/hosts.ini
           echo "ansible_ssh_private_key_file=~/.ssh/ansible_key" >> inventory/prod/hosts.ini
