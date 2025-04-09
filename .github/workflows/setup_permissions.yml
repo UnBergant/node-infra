@@ -33,6 +33,7 @@ jobs:
           echo "[all:vars]" >> inventory/prod/hosts.ini
           echo "ansible_user=root" >> inventory/prod/hosts.ini
           echo "ansible_ssh_private_key_file=~/.ssh/ansible_key" >> inventory/prod/hosts.ini
+          cat inventory/prod/hosts.ini
 
       - name: 🛠️ Запустить setup_permissions.yml
         run: |
