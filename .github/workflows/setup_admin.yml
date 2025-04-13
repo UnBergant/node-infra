@@ -1,0 +1,91 @@
+name: 👨‍💻 Setup admin user
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup_admin:
+    runs-on: ubuntu-latest
+
+    env:
+      ANSIBLE_HOST_KEY_CHECKING: "False"
+
+    steps:
+      - name: 📥 Клонировать репозиторий
+        uses: actions/checkout@v3
+
+      - name: 🧰 Установить зависимости
+        run: |
+          sudo apt update
+          sudo apt install -y ansible sshpass
+
+      - name: 🔐 Установить SSH-ключ
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ANSIBLE_PRIVATE_KEY }}" > ~/.ssh/ansible_key
+          chmod 600 ~/.ssh/ansible_key
+
+      - name: ✅ Проверить наличие приватного ключа
+        run: |
+          ls -l ~/.ssh/
+          file ~/.ssh/ansible_key
+          ssh-keygen -lf ~/.ssh/ansible_key || echo "❌ Ключ не читается"
+
+      - name: 📌 Добавить known_hosts
+        run: |
+          echo "${{ secrets.ANSIBLE_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: 🧭 Сгенерировать inventory
+        run: |
+          mkdir -p inventory/prod
+          echo "[all]" > inventory/prod/hosts.ini
+          echo "altair ansible_host=${{ secrets.TARGET_SERVER_IP }}" >> inventory/prod/hosts.ini
+          echo "[all:vars]" >> inventory/prod/hosts.ini
+          echo "ansible_user=root" >> inventory/prod/hosts.ini
+          echo "ansible_ssh_private_key_file=~/.ssh/ansible_key" >> inventory/prod/hosts.ini
+
+      - name: 🛠️ Запустить setup_admin.yml
+        run: |
+          ansible-playbook -i inventory/prod/hosts.ini playbooks/setup_admin.yml
+
+  setup_permissions:
+    name: 🔁 Вызов setup_permissions
+    needs: setup_admin
+    with:
+      target_ip: ${{ env.TARGET_SERVER_IP }}
+
+    runs-on: ubuntu-latest
+    environment: manual-approval
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v3
+
+      - name: 🔧 Установить зависимости
+        run: |
+          sudo apt update
+          sudo apt install -y ansible sshpass
+
+      - name: 🔐 Установить SSH-ключ
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ANSIBLE_PRIVATE_KEY }}" > ~/.ssh/ansible_key
+          chmod 600 ~/.ssh/ansible_key
+
+      - name: 📌 Добавить known_hosts
+        run: echo "${{ secrets.ANSIBLE_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: 🧭 Сгенерировать inventory
+        run: |
+          mkdir -p inventory/prod
+          echo "[all]" > inventory/prod/hosts.ini
+          echo "altair ansible_host=${{ inputs.target_ip }}" >> inventory/prod/hosts.ini
+
+          echo "[all:vars]" >> inventory/prod/hosts.ini
+          echo "ansible_user=root" >> inventory/prod/hosts.ini
+          echo "ansible_ssh_private_key_file=~/.ssh/ansible_key" >> inventory/prod/hosts.ini
+          cat inventory/prod/hosts.ini
+
+      - name: 🛠️ Запустить setup_permissions.yml
+        run: |
+          ansible-playbook -i inventory/prod/hosts.ini playbooks/setup_permissions.yml

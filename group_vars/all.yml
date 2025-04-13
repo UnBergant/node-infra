@@ -1,0 +1,9 @@
+root_username: root
+root_pubkey_file: ../files/root_key.pub
+admin_username: admin
+admin_pubkey_file: ../files/admin_key.pub
+allowed_sudo_commands:
+  - /usr/bin/apt update
+  - /usr/bin/apt upgrade
+  - /usr/bin/systemctl restart nginx
+  - /usr/bin/journalctl -xe

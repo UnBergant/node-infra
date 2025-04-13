@@ -1,0 +1,59 @@
+- name: Основной деплой через пользователя admin
+  hosts: all
+  become: true
+  vars_files:
+    - ../group_vars/all.yml
+  tasks:
+    - name: Установить .bash_aliases для admin
+      copy:
+        src: ../files/bash_aliases
+        dest: "/home/{{ admin_username }}/.bash_aliases"
+        owner: "{{ admin_username }}"
+        group: "{{ admin_username }}"
+        mode: '0644'
+
+    - name: Подключить .bash_aliases в .bashrc admin
+      lineinfile:
+        path: "/home/{{ admin_username }}/.bashrc"
+        line: 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi'
+        state: present
+        insertafter: EOF
+        owner: "{{ admin_username }}"
+        group: "{{ admin_username }}"
+
+    - name: Подключить .bashrc из .bash_profile admin
+      lineinfile:
+        path: "/home/{{ admin_username }}/.bash_profile"
+        line: 'if [ -f ~/.bashrc ]; then . ~/.bashrc; fi'
+        state: present
+        insertafter: EOF
+        create: yes
+        owner: "{{ admin_username }}"
+        group: "{{ admin_username }}"
+
+    - name: Установить .bash_aliases для root
+      copy:
+        src: ../files/bash_aliases
+        dest: "/root/.bash_aliases"
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Подключить .bash_aliases в .bashrc root
+      lineinfile:
+        path: "/root/.bashrc"
+        line: 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi'
+        state: present
+        insertafter: EOF
+        owner: root
+        group: root
+
+    - name: Подключить .bashrc из .bash_profile root
+      lineinfile:
+        path: "/root/.bash_profile"
+        line: 'if [ -f ~/.bashrc ]; then . ~/.bashrc; fi'
+        state: present
+        insertafter: EOF
+        create: yes
+        owner: root
+        group: root
